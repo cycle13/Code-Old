@@ -1,0 +1,113 @@
+---
+layout:     post
+title:      "流体百态"
+subtitle:   "Fluid"
+date:       2017-10-15
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: false
+tags:
+    - 大气科学
+---
+
+流体运动的多样性和不稳定性长期以来都是重要的课题。下面这些图片都出自1998、1999和2000年美国物理学会流体力学分会举办的年度流体运动图片展，有的是实验结果，也有计算机模拟图象，展示了难以解析计算的流体复杂行为。
+
+1、水流流过球体后产生的旋涡：管中稳定的水流流过直径1厘米的球体时产生的周期性旋涡结构。激光照射出的流体形态显示，旋涡呈反向纤维状。实验时雷诺数的选取要将将使流体尾迹有周期性行为。本实验根据球体直径将雷诺数选为320，远小于湍流的临界雷诺数2000左右，但球体后方的尾流仍相当复杂。
+
+![img](/img/in-post/2017-10-15-fluid/01.png)
+
+图片提供：T. Leweke, M. Provansal, D. Ormières, and R. Lebescond (IRPHE, CNRS/Universités Aix-Marseille, France)
+
+2、共轴射流附近的剪切不稳定性：共轴慢速圆喷流和快速窄喷流界面上产生的纵向和横向剪切不稳定性。下图的实验中两道流体的速度比选为3，雷诺数约为20000。由横向不稳定性产生的纵向旋涡可以有效地混合射流附近的流体。如进一步加大速度比，则会出现类似不稳定尾流的振荡，不再表现为射流行为。
+
+![img](/img/in-post/2017-10-15-fluid/02.png)
+
+图片提供：E. Villermaux, H. Rehab, and E. J. Hopfinger (LEGI-CNRS, Institut de Mécanique de Grenoble, BP 53X, 38041 Grenoble Cedex, France)
+
+3、低重力下的水膜气球：在DC-9飞机模拟的低重力环境下观察到的水膜气球行为。水膜被针尖刺破后，表面向某一方向喷出飞沫，随后剩余部分会出现长久的振动。
+
+![img](/img/in-post/2017-10-15-fluid/03.png)
+
+图片提供：M. M. Weislogel1 and S. Lichter2 (NASA Lewis Research Center1, Northwestern University2)
+
+4、蓟花冠冕：将一滴染色的水滴滴到甘油层上得到的结果。水滴先是分为外环和内层两部分，随后表面张力使水层产生涡旋，波动又加强了张力梯度，产生图中所示的叶状外观（各图时间间隔约5秒）。
+
+![img](/img/in-post/2017-10-15-fluid/04.png)
+
+图片提供：E. Tan and S. T. Thoroddsen (University of Illinois at Urbana-Champaign)
+
+5、湍流的色彩：该实验所采用的流体在不同温度下会呈现不同的色彩，因而颜色的变化就表现了湍流的热量传输过程，图样则与瞬时传输系数相关。图中展现的是在涡轮驱动的下行水流抵达固壁时的温度分布。
+
+![img](/img/in-post/2017-10-15-fluid/05.png)
+
+图片提供：D. R. Sabatino and T. J. Praisner (Lehigh University)
+
+6、射流扰动形成的空穴：连续的水流射入水池中，导致池中出现充有空气的空穴。控制喷嘴处的阀门可以增强入射水流，这导致了鼓包的出现。照片中展现了鼓包在张力和引力作用下随时间演化的情况。实验中的雷诺数约为12300。
+
+![img](/img/in-post/2017-10-15-fluid/06.png)
+
+图片提供：Y. Zhu, H. N. Ogiz, and A. Prosperetti (The Johns Hopkins University)
+
+7、涡旋的产生：涡旋可以通过抽动水流产生。下图两个涡旋分别由两端的盘状物旋转生成。染色的水流可以帮助人们理解湍流中涡丝的动力学行为。
+
+![img](/img/in-post/2017-10-15-fluid/07.png)
+
+图片提供：Philippe Petitjeans (Laboratoire de Physique et Mécanique des Milieus Hétérogènes, Ecole Supérieure de Physique te de Chimie Industrielles, Paris, France)
+
+8、三维流体与固体的作用：使用微元法和欧拉-拉格朗日标记进行的三维流体模拟。流体流出后在引力作用下流向三条短堤围起的障碍物。模拟中表现了障碍物后方和周边区域的水波结构。
+
+![img](/img/in-post/2017-10-15-fluid/08.png)
+
+9、微观流体的湍动：46微米厚的液晶层的流动。液晶夹在两块玻璃平板之间，两块玻璃板的内表面连以电极。当电场强度平缓增加时，液晶先是分成6束流（右上），再变为弱的湍流状态（左下）或是方格状对流元（右下），下侧两图中液晶的物理参数均处在混沌与湍流的过渡范围内。
+
+![img](/img/in-post/2017-10-15-fluid/09.png)
+
+图片提供：T. Peacock and T. Mullin (University of Manchester)
+
+10、受迫固壁射流的双螺旋不稳定性：对平面固壁射流（Wall Jet）传输过程的分析。可视化采用了米（Mie）散射的方法。其中a、c两图为实验结果，d为实验装置介绍，b、e、f、g为计算机模拟结果。
+
+![img](/img/in-post/2017-10-15-fluid/10.png)
+
+图片提供：M. Visbal1, D. Gaitonde1, and S. Gogineni2 (1Air Force Research Laboratory, Wright–Patterson AFB,2Innovative Scientific Solutions, Inc., Dayton, Ohio)
+
+11、剪切层不稳定波与斜激波作用产生的声波：剪切层不稳定性与激波元的作用可以使超音速流产生噪音。下图是为了了解作用过程而构造的二维模型，由斜激波和超音速剪切层组成，剪切层中有不稳定的波动。图中黄色表示强压缩区域，红色为压缩区域，蓝色为膨胀区，灰色为音速区，绿色为涡度等高线。
+
+![img](/img/in-post/2017-10-15-fluid/11.png)
+
+图片提供：Ted A. Manning and Sanjiva K. Lele (Stanford University Department of Aeronautics and Astronautics, Stanford, California 94305-4035)
+
+12、圆形振膜上水滴的雾化：1厘米直径的水滴在400毫秒的时间内被粉碎迅速。水滴表面的不稳定性引起了表面波，波峰喷射出更小的次级水滴，瓦解了原水滴，而原水滴与振膜的耦合会影响次级水滴的演化行为。
+
+![img](/img/in-post/2017-10-15-fluid/12.png)
+
+图片提供：Bojan Vukasinovic, Ari Glezer, and Marc K. Smith (Georgia Institute of Technology)
+
+13、涡旋的不稳定并合：初始条件为两个共转的层流涡旋。当雷诺数增加至2000后，三维不稳定性使涡旋瓦解。下图上侧为并合前的情况，下侧为并合后，左侧为侧视图，右侧为附视图。
+
+![img](/img/in-post/2017-10-15-fluid/13.png)
+
+图片提供：P. Meunier and T. Leweke (CNRS/Universités Aix-Marseille, France)
+
+14、负电雾化：室温下静电作用瓦解油滴的照片。充电由插入液体内的电极完成。停止通电后，静电作用导致了液体的雾化。
+
+![img](/img/in-post/2017-10-15-fluid/14.png)
+
+图片提供：Dimitris E. Nikitopoulos (Louisiana State University) and Arnold J. Kelly (CIC, Inc.)
+
+15、涡旋射流旋转对称性的破坏：涡旋参数S是流体绕轴向与径向运动速度相对大小的度量。以下左图S取0.38，右图取0.49，可见轴向生成的不稳定结构。对于有涡旋存在的射流，不稳定性的成因与非涡旋流类似，但涡旋的存在放大了涡旋反方向的不稳定旋涡，却减小了涡旋方向的不稳定，而且还增大了轴向的不稳定形变。
+
+![img](/img/in-post/2017-10-15-fluid/15.png)
+
+图片提供：Thomas Loiseleux and Jean-Marc Chomaz, CNRS-Ecole polytechnique
+
+16、粒子负载流的模拟：使用粒子模拟方法再现含有固体粒子的球形不可压缩流体在重力与粘滞力共同左右下的行为。图中红色代表流体，白色代表固体颗粒。其中上面三图考虑了初始的涡度，下面三图不计初始涡度。
+
+![img](/img/in-post/2017-10-15-fluid/16.png)
+
+图片提供：J. H. Walther (ETH Zürich), S.-S. Lee (Stanford) and P. Koumoutsakos (ETH Zürich and NASA Ames)
+
+17、流体中的奇点：下图是甘油与水的混合液在垂直于表面且振幅接近临界值的正弦激发作用下，从表面波最低点的消失一直到向上运动的射流形成全过程的多次曝光照片。右侧的插图则是表面波瓦解的过程。由于瑞利不稳定性的存在，射流末端破裂成了液滴。
+
+![img](/img/in-post/2017-10-15-fluid/17.png)
+
+图片提供：by B. W. Zeff1, J. Fineberg1,2, and Daniel P. Lathrop1 (1University of Maryland, College Park,2Hebrew University of Jerusalem)

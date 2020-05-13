@@ -1,0 +1,231 @@
+---
+layout:     post
+title:      "神奇的yield"
+subtitle:   "yield"
+date:       2017-10-14
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: true
+tags:
+    - Python
+---
+
+> We find two main senses for the verb "to yield" in dictionaries: to produce or to give way.
+
+Luciano Ramalho 在他的《Fluent Python》协程一节中如是写道。yield 是一个在很多语言中都有的关键字和特性，和它有关的种种概念——生成器，协程……可能让人费解，但一旦真正理解了它们的含义，一扇新的大门将为我们展开。
+
+# 代替递归
+
+很多时候，生成器可以用来代替递归。众所周知，递归实现的算法简洁，优雅，但对于Python来说，性能很差，而且还有递归深度限制。当然我们可以把某些递归改写成循环和迭代的形式，但生成器可以帮助我们写出既优雅又高性能的代码。
+
+我们先来个简单的例子——生成斐波那契数列。
+
+```
+def fib_rec(n):
+    if n==0 or n==1:
+        return 1
+    else:
+        return fib_rec(n-2) + fib_rec(n-1)
+def fib_gen():
+    before2 = 0 #原谅变量名起的渣
+    before1 = 1
+    while True:
+        now = before2 + before1
+        yield now
+        before2, before1 = before1 , now
+```
+
+这个例子很简单，而且好像生成器版本的代码也不怎么优雅和易读，但是理解了程序流就会觉得很好理解。
+
+开胃小菜过后，我们来道可口的。
+
+David Beazley 在他的《Python Cookbook（第三版）》中的一节中介绍了如何使用生成器来改写访问者类的递归版本。让人拍案。
+
+首先我们看一下改写的基础代码
+
+```
+import types
+
+class Node:
+    pass
+
+class NodeVisitor:
+    def visit(self, node):
+        stack = [node]
+        last_result = None
+        while stack:
+            try:
+                last = stack[-1]
+                if isinstance(last, types.GeneratorType):
+                    stack.append(last.send(last_result))
+                    last_result = None
+                elif isinstance(last, Node):
+                    stack.append(self._visit(stack.pop()))
+                else:
+                    last_result = stack.pop()
+            except StopIteration:
+                stack.pop()
+
+        return last_result
+
+    def _visit(self, node):
+        methname = 'visit_' + type(node).__name__
+        meth = getattr(self, methname, None)
+        if meth is None:
+            meth = self.generic_visit
+        return meth(node)
+
+    def generic_visit(self, node):
+        raise RuntimeError('No {} method'.format('visit_' + type(node).__name__))
+```
+
+递归的调用
+
+```
+class UnaryOperator(Node):
+    def __init__(self, operand):
+        self.operand = operand
+
+class BinaryOperator(Node):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+class Add(BinaryOperator):
+    pass
+
+class Sub(BinaryOperator):
+    pass
+
+class Mul(BinaryOperator):
+    pass
+
+class Div(BinaryOperator):
+    pass
+
+class Negate(UnaryOperator):
+    pass
+
+class Number(Node):
+    def __init__(self, value):
+        self.value = value
+
+# A sample visitor class that evaluates expressions
+class Evaluator(NodeVisitor):
+    def visit_Number(self, node):
+        return node.value
+
+    def visit_Add(self, node):
+        return self.visit(node.left) + self.visit(node.right)
+
+    def visit_Sub(self, node):
+        return self.visit(node.left) - self.visit(node.right)
+
+    def visit_Mul(self, node):
+        return self.visit(node.left) * self.visit(node.right)
+
+    def visit_Div(self, node):
+        return self.visit(node.left) / self.visit(node.right)
+
+    def visit_Negate(self, node):
+        return -self.visit(node.operand)
+
+if __name__ == '__main__':
+    # 1 + 2*(3-4) / 5
+    t1 = Sub(Number(3), Number(4))
+    t2 = Mul(Number(2), t1)
+    t3 = Div(t2, Number(5))
+    t4 = Add(Number(1), t3)
+    # Evaluate it
+    e = Evaluator()
+    print(e.visit(t4))  # Outputs 0.6
+```
+
+一旦嵌套过深，就会出现问题
+
+```
+>>> a = Number(0)
+>>> for n in range(1, 100000):
+... a = Add(a, Number(n))
+...
+>>> e = Evaluator()
+>>> e.visit(a)
+Traceback (most recent call last):
+...
+    File "visitor.py", line 29, in _visit
+return meth(node)
+    File "visitor.py", line 67, in visit_Add
+return self.visit(node.left) + self.visit(node.right)
+RuntimeError: maximum recursion depth exceeded
+>>>
+```
+
+而我们用生成器的方式来调用，一切又都可以运行了
+
+```
+class Evaluator(NodeVisitor):
+    def visit_Number(self, node):
+        return node.value
+
+    def visit_Add(self, node):
+        yield (yield node.left) + (yield node.right)
+
+    def visit_Sub(self, node):
+        yield (yield node.left) - (yield node.right)
+
+    def visit_Mul(self, node):
+        yield (yield node.left) * (yield node.right)
+
+    def visit_Div(self, node):
+        yield (yield node.left) / (yield node.right)
+
+    def visit_Negate(self, node):
+        yield - (yield node.operand)
+```
+
+```
+>>> a = Number(0)
+>>> for n in range(1,100000):
+...     a = Add(a, Number(n))
+...
+>>> e = Evaluator()
+>>> e.visit(a)
+4999950000
+>>>
+```
+
+神奇吗？仅仅是将return换成了yield，就能有如此巨大的改变。
+
+我们来梳理一下代码。显然，重要的地方是第一段中NodeVisitor的定义。他用一个stack来保存程序计算中的数据结构，一开始，这里保存的是一个node的实例——t4。然后调用evaluator的visit方法，取出栈顶元素——此时是t4——保存在last中。判断它是一个Node的实例，再对其调用evaluator的_visit方法，同时把它从栈中弹出。而_visit 方法基本就是一个典型的访问者的设计模式的实现。然后，我们又看到，在后几段代码中，evaluator的visit_xxx方法的实现中将return换成了yield，这意味着，它将返回一个生成器——而不是和前面的实现中递归地调用。这个生成器被追加到了stack中。这时，Nodevisitor又检查栈顶元素，是生成器，调用其send方法，参数是last_result（此时值是None）。根据evaluator的定义，它又将返回一个Node的实例，然后再把它转换为一个生成器，或者如果是一个特定的子类（这里是Number）的话，直接返回值，如此循环往复。要注意的是，如果直接返回了值，说明已经产生了一个结果，这时将它赋值给last_result（原来的值是None的哦），再由evaluator将其通过send方法传给上一个层次的生成器，如此来实现结果的传递。直至最后计算出一个总的结果，返回。
+
+思想是什么呢？原先嵌套的调用（递归）是由python解释器来处理的。现在，我们将每一次分解转化为一个生成器保存在栈中，每次检查栈顶元素的类型来决定执行什么操作。如果是一个Node的实例，就再将其转化为生成器，或者，直接返回值。如果是数值，将其保存在last_result中，将其从栈中弹出。如果是一个生成器，调用它的send方法，参数是last_result。这样，原本面对很深的嵌套，我们可能会需要递归地调用很多次才能真正返回一个值。而现在，yield将执行权再次交还给了evaluator，告诉它先计算第一个节点，出结果之后，再计算下一个——恰好和递归的执行顺序相反（虽然代码极其相似）。而生成器依然保存着执行状态，随时等待调用。自然递归深度限制也就不会再有。
+
+我们再来看看这个例子是如何将生成器的特性发挥的淋漓尽致的。
+
+其实，我们已经不能把它叫成是单纯的生成器，它还用到了协程的概念。首先，就像我们开头说的，yield有两个意思——to produce or to give way 。
+
+```
+yield (yield node.left) + (yield node.right)
+```
+
+这一句中的yield将node返回，既是produce 也是 give way，执行权交还给了evaluator，那evaluator怎么将结果传递给生成器呢？这就是send方法的作用。send方法的参数就是生成器中yield生成的值，这句话好像有点难理解，就是说，生成器恢复执行之后，原先的yield产生的值就是send传入的参数。而生成器会执行到下一个yield处，或者raise StopIteration。这时的生成器又会产生一个值，这个值哪了呢？它就是调用send方法后返回的值。所以我们才说还用到了协程的概念，事实上，协程的逻辑和这里基本相同。
+
+# 状态机
+
+ES6向Python借鉴了列表推导的语法糖，同时，它还添加了生成器的新特性（当然不是从Python中借鉴的）。
+
+在阮一峰的《ES6标准入门》中，他介绍了使用生成器来定义状态机，用yield来划分不同状态的技巧。我在Python书籍和社区中没有见过（可能是我孤陋寡闻）。但仔细一想，python的标准库中就有类似的用法——contextlib.contextmanager
+
+它的用法就是使用yield来划分代码，之前的相当于上下文管理器的`__enter__()`，之后的相当于`__exit__()`。我们也可将其看作是一个状态机，只不过控制它的是python解释器。
+
+# 协程
+
+本想仔细说一说协程，但其基本逻辑前面已提到，而asyncio，async/await，又是一大篇文章。就不多说了。
+
+# 最后
+
+前面说的几个例子，其实也就是用了关于yield的那几个特性，只是要有想象力来充分的利用。希望我们都能让它们变成改善代码的好帮手。
+
+
+
+

@@ -1,0 +1,49 @@
+{% extends "blog_page.html" %}
+{% block title %}
+    {{ blog.title }}
+{% endblock %}
+
+{% block blogMain %}
+    <div class="blog-post">
+        <h2 class="blog-post-title">{{ blog.title }}</h2>
+
+        <p class="blog-post-meta">{{ blog.postTime|datetimeformat('yyyy-MM-dd HH:mm:ss') }} <a
+                href="/">{{ blog.user.userName }}</a>
+            {% if current_user.is_authenticated %}
+                <a href="/editBlog/{{ blog._id }}">编辑</a>
+                <a href="#" onclick="confirmDelete('{{ blog._id }}')">删除</a>
+            {% endif %}
+        </p>
+        {{ blog.html|safe }}
+        <div class="blog-post-meta" style="float:right">
+            <div class="bdsharebuttonbox">  
+                <a href="#" class="bds_more" data-cmd="more"></a>  
+                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>  
+                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>   
+                <a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a>  
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>  
+            </div>
+        </div>  
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+        window._bd_share_config = {
+            "common": {
+                "bdSnsKey": {},
+                "bdText": "",
+                "bdMini": "2",
+                "bdMiniList": false,
+                "bdPic": "",
+                "bdStyle": "1",
+                "bdSize": "1"
+            },
+            "share": {},
+            "image": {"viewList": ["qzone", "tsina", "renren", "weixin"], "viewText": "分享到：", "viewSize": "1"},
+            "selectShare": {"bdContainerClass": null, "bdSelectMiniList": ["qzone", "tsina", "renren", "weixin"]}
+        };
+        with (document)0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+    </script>
+{% endblock %}

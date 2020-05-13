@@ -1,0 +1,74 @@
+---
+layout:     post
+title:      "linux shell 命令获取字符串/文件的MD5值"
+subtitle:   "Shell MD5"
+date:       2017-08-25
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: true
+tags:
+    - Linux系统运维与服务器管理
+---
+
+# 获取字符串的MD5值：
+
+字符串“hello”的MD5：
+
+```
+$ echo -n 'hello'|md5sum|cut -d ' ' -f1
+```
+
+得到的MD5值：
+
+5d41402abc4b2a76b9719d911017c592
+
+命令解释：
+
+md5sum: 显示或检查 MD5(128-bit) 校验和,若没有文件选项，或者文件处为"-"，则从标准输入读取。
+
+echo -n : 不打印换行符。
+
+cut:  cut用来从标准输入或文本文件中剪切列或域。剪切文本可以将之粘贴到一个文本文件。-d 指定与空格和tab键不同的域分隔符。-f1 表示第一个域。
+
+# 获取文件的MD5值：
+
+```
+$ md5sum linuxmint-12-gnome-dvd-32bit.iso|cut -d ' ' -f1
+```
+
+得到的MD5值：
+
+ee3d6e2ca498bc7685b7f17cdb5f2eea
+
+# 使用MD5校验iso文件：
+
+```
+$ md5sum linuxmint-12-gnome-dvd-32bit.iso >linuxmint-12-gnome-dvd-32bit.md5
+```
+
+注意linuxmint-12-gnome-dvd-32bit.md5的内容是：
+
+ef3d6e2ca498bc7685b7f17cdb5f2eea linuxmint-12-gnome-dvd-32bit.iso
+
+把linuxmint-12-gnome-dvd-32bit和其验证文件linuxmint-12-gnome-dvd-32bit.md5放到同一目录下用下面的命令：
+
+```
+$ md5sum -c linuxmint-12-gnome-dvd-32bit.md5
+```
+
+如果校验正确则输出: 
+
+linuxmint-12-gnome-dvd-32bit.iso: 确定
+
+如果校验错误则输出：
+
+linuxmint-12-gnome-dvd-32bit.iso: 失败
+
+md5sum: 警告：1/1 生成的校验和不匹配
+
+命令解释：
+
+md5 -c: 从文件中读取MD5 的校验值并予以检查
+
+Message Digest Algorithm MD5为计算机安全领域广泛使用的一种散列函数，用以提供消息的完整性保护。该算法的文件号为RFC 1321（R.Rivest,MIT Laboratory for Computer Science and RSA Data Security Inc. April 1992）
+keywords:Hash,SHA,Ronald L. Rivest,MD5,IETF(Internet Engineering Task Force)

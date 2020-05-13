@@ -1,0 +1,22 @@
+{% extends "blog_page.html" %}
+
+{% block pageHeader %}
+    <div class="blog-header">
+
+    </div>
+{% endblock %}
+
+{% block title %}
+    文章列表
+{% endblock %}
+
+{% block pageContent %}
+	{% for blog in blogs %}
+	<p class="blog-main">
+		<a href="/blog/{{ blog._id }}">{{ blog.title }}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		{% if current_user.is_authenticated %}
+			<a href="#" onclick="confirmDelete('{{ blog._id }}')">删除</a>
+        {% endif %}
+    </p>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,296 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    background-color: #333;
+    color: #555;
+    font-family: 'Avenir Next', 'Lantinghei SC';
+    font-size: 14px;
+    /*-webkit-font-smoothing：none | subpixel-antialiased | antialiased
+     *none：对低像素的文本比较好
+     *subpixel-antialiased：默认值
+     *antialiased：抗锯齿
+
+     *-moz-osx-font-smoothing是mozilla给特定操作系统推出的特性增强
+     *设置grayscale对于图标字体表现更清晰，减轻次像素渲染带来的相邻像素色彩污染问题
+     */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.wrap{
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    background-color: #333;
+    position: absolute;
+    margin-top: -350px;
+    overflow: hidden;
+    /*perspective 是 CSS3 属性，目前浏览器都不支持 perspective 属性，
+     *Chrome 和 Safari 支持替代的 -webkit-perspective 属性。
+
+     *perspective 属性定义 3D 元素距视图的距离，以像素计，其值越小，用户与3D空间Z平面距离越近，视觉效果更令人印象深刻；
+     *反之，值越大，用户与3D空间Z平面距离越远，视觉效果就很小
+     *当为元素定义 perspective 属性时，其子元素会获得透视效果，而不是元素本身，perspective 属性只影响 3D 转换元素
+     *与 perspective-origin 属性一同使用该属性，这样您就能够改变 3D 元素的底部位置
+
+     *perspective: number | none; 
+     *number：元素距离视图的距离，以像素计(px 可以不写)
+     *none：默认值，与 0 相同，不设置透视
+
+     *在3D变形中，除了perspective属性可以激活一个3D空间之外，在3D变形的函数中的perspective()也可以激活3D空间。
+     *他们不同的地方是：perspective用在舞台元素上（变形元素们的共同父元素）；perspective()就是用在当前变形元素上，
+     *并且可以与其他的transform函数一起使用。例如，我们可以把：
+     *.stage {perspective: 600px;} 写成 .stage .box {transform: perspective(600px);}
+     *perspective()函数取值只能大于0，如果取值为0或比0小的值，将无法激活3D空间
+     */
+    perspective: 800px;
+    -webkit-perspective: 800px;
+}
+/* 海报样式 s*/
+.photo{
+    position: absolute;
+    width: 260px;
+    height: 320px;
+    z-index: 1;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .01);
+    /*IE 10、Firefox、Opera 和 Chrome 支持 transition 属性
+     *Safari 支持替代的 -webkit-transition 属性
+     *Internet Explorer 9 以及更早版本的浏览器不支持 transition 属性
+    
+     *transition 属性是一个简写属性(默认值：all 0 ease 0)，用于设置四个过渡属性：
+     *transition-property，定义应用过渡效果的 CSS 属性名称列表，列表以逗号分隔；all 则所有属性都将获得过渡效果
+     *transition-duration，规定完成过渡效果需要多少秒或毫秒，必须始终设置 transition-duration 属性，否则时长为 0，就不会产生过渡效果
+     *transition-timing-function，规定速度效果的速度曲线(linear|ease|ease-in|ease-out|ease-in-out|cubic-bezier(n,n,n,n))
+     *transition-delay，定义过渡效果何时开始
+     */
+    transition: all .5s;
+    -moz-transition: all .5s; /* Firefox 4 */
+    -webkit-transition: all .5s; /* Safari 和 Chrome */
+    -o-transition: all .5s; /* Opera */
+
+    /*初始化时每张海报都居中显示，然后通过 JavaScript 设置除中间海报外的随机位置，会产生从中间发散的效果时候时候，
+     *切换中间海报的时候，由于中间海报瞬间失去了 .photo_center 的样式，但仍然还有 .photo 的样式，再被设置随机样式后会有平滑的过渡效果
+     */
+    left: 50%;
+    top: 50%;
+    margin: -160px 0 0 -130px;
+}
+.photo .photo-wrap .side{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    /*IE8+、Opera 以及 Chrome 支持 box-sizing 属性，Firefox 支持替代的 -moz-box-sizing 属性。
+
+     *box-sizing: content-box | border-box | inherit
+     *content-box：默认值，按W3C盒模型进行处理 (element width = border + padding + border + content)
+     *border-box：按IE6盒模型进行处理 (element width = content)
+     */
+    box-sizing: border-box;
+    -moz-box-sizing：border-box;
+
+    /*
+     *IE 10+ 和 Firefox 支持 backface-visibility 属性，Opera 15+、Safari 和 Chrome 支持替代的 -webkit-backface-visibility 属性
+     *backface-visibility 属性定义当元素不面向屏幕时是否可见
+     *backface-visibility: visible | hidden
+     *visible：背面是可见的
+     *hidden：背面是不可见的
+     */
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;    /* Chrome 和 Safari */
+    -moz-backface-visibility:hidden;     /* Firefox */
+    -ms-backface-visibility:hidden;     /* Internet Explorer */
+}
+
+
+.photo .photo-wrap .side-front{
+    /*
+     *IE 10、Firefox、Opera 支持 transform 属性，IE 9 支持替代的 -ms-transform 属性（仅适用于 2D 转换）
+     *Safari 和 Chrome 支持替代的 -webkit-transform 属性（3D 和 2D 转换），Opera 只支持 2D 转换
+
+     *transform: none | rotate | scale | skew | translate | matrix
+     *如果有多个变换函数的时候，以空格分开
+     *none: 表示不进行变换
+     *rotate：旋转。rotate(<angle>) ：通过指定的角度参数对原元素指定一个 2D rotation，需先有 transform-origin 属性的定义
+
+     *scale：缩放。元素的缩放中心点是元素的中心位置，缩放基数为1，如果其值大于1元素就放大，反之其值小于1，元素缩小；
+     *scale(x,y)使元素水平方向和垂直方向同时缩放；如果第二个参数未提供，则取与第一个参数一样的值；
+     *scaleX(x)元素仅水平方向缩放；scaleY(y)元素仅垂直方向缩放；其中 x, y 为数字
+
+     *skew：扭曲。默认以元素中心为基点，也可以通过transform-origin来改变元素的基点位置；
+     *skew(x,y)使元素在水平和垂直方向同时扭曲，如果没有设置第二个参数，那么Y轴为0deg；
+     *skewX(x)仅使元素在水平方向扭曲变形；skewY(y)仅使元素在垂直方向扭曲变形，其中 x, y 为角度
+
+     *translate：移动。移动物体时基点默认为元素中心点，也可以根据 transform-origin 进行改变基点；
+     *translate(x,y)水平方向和垂直方向同时移动，如果第二个参数未提供，则以 0 作为其值；
+     *translateX(x)仅水平方向移动；translateY(y)仅垂直方向移动；其中 x, y 为像素值
+
+     *matrix：矩阵。
+     *更多参考：http://www.w3cplus.com/content/css3-transform/
+     */
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+    -moz-transform: rotateY(0deg);
+    -o-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+}
+
+.photo .photo-wrap .side-front .image{
+    width: 100%;
+    height: 250px;
+    line-height: 250px;
+    overflow: hidden;
+}
+.photo .photo-wrap .side-front .image img{
+    width: 100%;
+    vertical-align: middle;/*使高度不够的图片居中显示*/
+}
+.photo .photo-wrap .side-front .caption{
+    text-align: center;
+    font-size: 16px;
+    line-height: 50px;
+}
+/* 初始化时使 side-back 沿Y轴旋转180度，即在背面显示 */
+.photo .photo-wrap .side-back{
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+}
+.photo .photo-wrap .side-back .desc{
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5em;
+}
+/*当前选中的海报样式*/
+.photo_center{
+    top: 50%;
+    left: 50%;
+    margin: -160px 0 0 -130px;
+    z-index: 2;
+}
+/*负责翻转*/
+.photo .photo-wrap{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /*
+     *IE不支持，Firefox 支持 transform-style 属性，Chrome、Safari 和 Opera 支持替代的 -webkit-transform-style 属性
+     *transform-style 属性规定如何在 3D 空间中呈现被嵌套的元素。
+     *transform-style: flat | preserve-3d
+     *flat: 子元素将不保留其 3D 位置
+     *preserve-3d: 子元素将保留其 3D 位置
+     *一般而言，该声明应用在3D变换的兄弟元素们的父元素上，也就是舞台元素
+     *更多参考：http://www.zhangxinxu.com/wordpress/2012/09/css3-3d-transform-perspective-animate-transition/
+     */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+
+    transition: all .6s ease-in-out;
+    -webkit-transition: all .6s ease-in-out;/* Safari 和 Chrome */
+    -moz-transition: all .5s; /* Firefox 4 */
+    -o-transition: all .5s; /* Opera */
+
+    /*
+     *IE 10、Firefox、Opera 支持 transform-origin 属性，IE 9 支持替代的 -ms-transform-origin 属性（仅适用于 2D 转换），
+     *Safari 和 Chrome 支持替代的 -webkit-transform-origin 属性（3D 和 2D 转换），Opera 只支持 2D 转换
+     *transform-origin: x-axis y-axis z-axis; 设置旋转元素的基点位置
+     *x-axis：定义视图被置于 X 轴的何处。可能的值：left | center | right | length | %
+     *y-axis：定义视图被置于 Y 轴的何处。可能的值：top | center | bottom | length | %
+     *z-axis：定义视图被置于 Z 轴的何处。可能的值：length
+     */
+    transform-origin: 0% 50% 0px;
+    -ms-transform-origin: 0% 50% 0px;/* IE 9 */
+    -o-transform-origin: 0% 50% 0px;/* Opera */
+    -webkit-transform-origin: 0% 50% 0px;/* Safari 和 Chrome */
+    -moz-transform-origin: 0% 50% 0px;/* Firefox */
+}
+.photo_front .photo-wrap{/* .photo_front 是添加到 div.photo 的类 */
+    transform: translate(0px, 0px) rotateY(0deg);
+    -webkit-transform: translate(0px, 0px) rotateY(0deg);
+    -moz-transform: translate(0px, 0px) rotateY(0deg);
+    -o-transform: translate(0px, 0px) rotateY(0deg);
+    -ms-transform: translate(0px, 0px) rotateY(0deg);
+}
+.photo_back .photo-wrap{/* .photo_back 是添加到 div.photo 的类*/
+    transform: translate(260px, 0px) rotateY(180deg);
+    -webkit-transform: translate(260px, 0px) rotateY(180deg);
+    -moz-transform: translate(260px, 0px) rotateY(180deg);
+    -o-transform: translate(260px, 0px) rotateY(180deg);
+    -ms-transform: translate(260px, 0px) rotateY(180deg);
+}
+
+
+/* 添加控制按钮的样式 */
+@font-face{
+    font-family: 'icomoon';
+    src: url('images/icomoon.woff') format('woff');
+    font-weight: normal;
+    font-size: normal;
+}
+.navs{
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    height: 30px;
+    line-height: 30px;
+    bottom: 20px;
+    z-index: 3;
+    text-align: center;
+}
+/* 普通样式 */
+.navs .i{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: #aaa;
+    text-align: center;
+    border-radius: 50px;
+    transform: scale(.5);
+    -webkit-transform: scale(.5);
+    -moz-transform: scale(.5);
+    -o-transform: scale(.5);
+    -ms-transform: scale(.5);
+
+    transition: all .5s;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -o-transition: all .5s;
+}
+/* 设置并显示字体图标 */
+.navs .i:after{
+    content: '\e965';
+    font-family: 'icomoon';
+    font-size: 80%;
+    display: inline-block;
+    line-height: 30px;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+}
+/* 选中样式 */
+.navs .i_current{
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -o-transform: scale(1);
+    -ms-transform: scale(1);
+}
+.navs .i_current:after{
+    opacity: 1;
+}
+/* 背面样式 */
+.navs .i_back{
+    background-color: #555;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+    -o-transform: rotateY(180deg);
+    -ms-transform: rotateY(180deg);
+}            

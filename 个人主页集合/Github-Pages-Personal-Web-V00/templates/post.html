@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    发表文章
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='markdown/Markdown.Editor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block pageContent %}
+    <br>
+    <form method="POST" class="form" role="form">
+
+        {{ form.csrf_token }}
+        {{ form.html(id='html') }}
+        {{ form.title(class="form-control title-input", placeholder="标题") }}
+        <br>
+        <div class="wmd-panel">
+            <div id="wmd-button-bar" class="wmd-panel"></div>
+            <div class="row">
+                <div class="col-sm-6">{{ form.markdown(id='wmd-input',class='wmd-input') }}</div>
+                <div class="col-sm-6">
+                    <div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        {{ wtf.form_field(form.submit) }}
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='markdown/Markdown.Converter.js') }}"></script>
+    <script src="{{ url_for('static', filename='markdown/Markdown.Sanitizer.js') }}"></script>
+    <script src="{{ url_for('static', filename='markdown/Markdown.Editor.js') }}"></script>
+    <script type="text/javascript">
+        (function () {
+            var converter = Markdown.getSanitizingConverter();
+            var editor = new Markdown.Editor(converter);
+            editor.hooks.chain('onPreviewRefresh', function () {
+                $("#html").val($("#wmd-preview").html());
+            });
+            editor.run();
+        })();
+    </script>
+{% endblock %}

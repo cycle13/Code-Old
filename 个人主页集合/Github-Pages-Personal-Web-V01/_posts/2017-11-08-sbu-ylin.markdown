@@ -1,0 +1,16 @@
+---
+layout:     post
+title:      "SBU-YLIN方案的改进"
+subtitle:   "The improvement of SBU-YLIN scheme in WRF"
+date:       2017-11-08
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: false
+tags:
+    - 天气预报与数值模式
+    - 我的笔记
+---
+
+> This note introduces part of my thesis of Master's degree. More details would be presented in the future.
+
+The SBU-YLIN scheme is noted unable to maintain the convection in squall line simulation. This is mainly due to the turning off of rain evaporation scheme when relative humidity is larger than 90%. After modification of rain evaporation scheme and saturation adjustment scheme, SBU-YLIN scheme could produce a reasonable well squall line. Details please see my arXiv document: [An improvement of the SBU-YLIN microphysics scheme in squall line simulation](https://arxiv.org/abs/1612.09369). Also, this improved SBU-YLIN would be released in WRF future versions for further test.

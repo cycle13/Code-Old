@@ -1,0 +1,94 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/utils.html" as utils %}
+
+{% block title %}Raphael{% endblock %}
+
+{% set active_page = active_page|default('index') %}
+
+{% block html_attribs %}
+    lang="zh-CN"
+{% endblock %}
+
+{% block metas %}
+    {{ super() }}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="QQF,blog,python,flask,开源博客">
+    <meta name="description" content="QQF的个人博客">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='image/icon.jpeg') }}" type="image/QQF-icon"/>
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}">主页</a>
+        </div>
+        {% if current_user.is_authenticated %}
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('bloglist') }}">文章列表</a></li>
+                    <li><a href="{{ url_for('postBlog') }}">发表文章</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('logout') }}">注销</a></li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="{{ url_for('bloglist') }}">文章列表</a></li>
+                    <li><a href="{{ url_for('about') }}">关于我</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('login') }}">登录</a></li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+        {% block pageHeader %}
+
+        {% endblock %}
+        {{ utils.flashed_messages(dismissible=True) }}
+        {% block pageContent %}
+
+        {% endblock %}
+</div>
+<br>
+<br>
+<footer class="blog-footer">
+    <p><center>©{{ moment().format('YYYY') }} QQF | All Rights Reserved | Powered by <a href="https://github.com/QQFRaphael/RaphaelBlog">RaphaelBlog</a><center></p>
+    <p><a href="#">回到顶部</a></p>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?af448931aaa246055504a01c20a7ae36";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script src="//cdn.bootcss.com/bootbox.js/4.4.0/bootbox.min.js"></script>
+    {{ moment.include_moment(local_js='//cdn.bootcss.com/moment.js/2.10.6/moment-with-locales.min.js') }}
+    {{ moment.lang('zh-cn') }}
+{% endblock %}

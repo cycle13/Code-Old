@@ -1,0 +1,183 @@
+---
+layout:     post
+title:      "Linux /dev 常见特殊设备介绍与应用"
+subtitle:   "Linux dev"
+date:       2017-08-26
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: true
+tags:
+    - Linux系统运维与服务器管理
+---
+
+linux是文件型系统，所有硬件如软件都会在对于的目录下面有相应的文件表示。对于dev这个目录，我们知道它下面的文件，表示的是linux的设备。在windows系统中，设备大家很好理解，象硬盘，磁盘指的是实实在在硬件。而在文件系统的linux下面，都有对于文件与这些设备关联的。访问它们就可以放到实际硬件，想想还是linux灵活了。变成文件，操作该多简单了。不用调用以前com,prt等接口了。直接读文件，写文件就可以向设备发送读或者写操作了。 按照读写存储数据方式，我们可以把设备分为以下几种：字符型设备，块设备，伪设备。
+
+# 设备分类
+
+## 字符型设备
+
+字符设备是指每次与系统传输1个字符的设备。这些设备节点通常为传真、虚拟终端和串口调制解调器、键盘之类设备提供流通信服务，它通常不支持随机存取数据。 字符设备在实现时，大多不使用缓存器。系统直接从设备读取／写入每一个字符。例如，键盘这种设备提供的就是一个数据流，当你敲入“cnblogs”这个字符串时，键盘驱动程序会按照和输入完全相同的顺序返回这个由七个字符组成的数据流。它们是顺序的，先返回c，最后是s。
+
+## 块设备
+
+块设备是指与系统间用块的方式移动数据的设备。这些设备节点通常代表可寻址设备，如硬盘、CD-ROM和内存区域。
+
+块设备通常支持随机存取和寻址，并使用缓存器。操作系统为输入输出分配了缓存以存储一块数据。当程序向设备发送了读取或者写入数据的请求时，系统把数据中的每一个字符存储在适当的缓存中。当缓存被填满时，会采取适当的操作（把数据传走），而后系统清空缓存。它与字符设备不同之处就是，是否支持随机存储。字符型是流形式，逐一存储。
+
+## 伪设备
+
+在类Unix操作系统中，设备节点并不一定要对应物理设备。没有这种对应关系的设备是伪设备。操作系统运用了它们提供的多种功能。部份经常使用到的伪设备包括： null,zero,full,loop,random,urandom
+
+# 特殊设备及使用
+
+这里说到特殊设备除了硬盘主板等，只是它在linux shell命令里面，有特殊的作用，因此把它们单独拿出来。这些设备分别是：
+
+/dev/stdin
+
+/dev/stdout
+
+/dev/stderr
+
+/dev/null
+
+/dev/zero
+
+/dev/full
+
+/dev/random,urandom
+
+/dev/fd
+
+/dev/tcp,upd
+
+/dev/loop
+
+## 标准输出输入设备
+
+还记得上次说的，linux重定向吗？可以看下：linux shell数据重定向（输入重定向与输出重定向）详细分析 。它们就是与几个特殊文件描述符对应，fd0,fd1,fd2 （stdin,stdout,stderr)
+
+如：
+
+```
+[chengmo@centos5 shell]$ cat>teststdin</dev/stdin
+test
+#ctrl+D
+#cat从/dev/stdin获得数据，然后将标准输出，输入的到teststdin文件
+[chengmo@centos5 shell]$ cat teststdin
+test
+[chengmo@centos5 shell]$ cat>teststdin
+test
+#ctrl+D
+#不指定输入，默认输入设备就是/dev/stdinn
+```
+
+/dev/stdin指的就是键盘设备
+
+```
+[chengmo@centos5 shell]$ cat test.sh >/dev/stdout |grep 'echo'
+echo "very good!";
+echo "good!";
+echo "pass!";
+echo "no pass!"
+#/dev/stdout指向就是标准输出，因此重定向给它的数据，最终发送到屏幕上（fd1)
+[chengmo@centos5 shell]$ cat test.sh |grep 'echo'
+echo "very good!";
+echo "good!";
+echo "pass!";
+echo "no pass!";
+[chengmo@centos5 shell]$ cat test.sh >/dev/stderr |grep 'echo'
+#!/bin/sh
+scores=40;
+if [[ $scores -gt 90 ]]; then
+echo "very good!";
+elif [[ $scores -gt 80 ]]; then
+echo "good!";
+elif [[ $scores -gt 60 ]]; then
+echo "pass!";
+else
+echo "no pass!";
+fi;
+#/dev/stderr 指是错误输出，默认也是输出到屏幕上面，但是它的内容不能通过管道传递给grep，管道只能传递标准输出
+```
+
+/dev/null设备
+
+是个黑洞设备,它丢弃一切写入其中数据，空设备通常被用于丢弃不需要的输出流。记得当年用windows时候，有个类似的设备：NUL ，跟这个功能一样。任何写入该设备数据都会被丢弃掉。从这个里面读取数据返回是空。将一些不用内容经常发送给这个设备,丢弃不需要的数据。
+
+如：
+
+```
+[chengmo@centos5 shell]$ cat /dev/null
+[chengmo@centos5 shell]$ cat test.sh >/dev/null
+#读该设备为空，写入该设备数据都丢弃了
+```
+
+/dev/zero设备
+
+在类UNIX 操作系统中, /dev/zero 是一个特殊的文件，当你读它的时候，它会提供无限的空字符(NULL, ASCII NUL, 0×00)。其中的一个典型用法是用它提供的字符流来覆盖信息，另一个常见用法是产生一个特定大小的空白文件。
+
+如：
+
+```
+[chengmo@centos5 shell]$ dd if=/dev/zero of=testzero count=1024 bs=1024
+1024+0 records in
+1024+0 records out
+1048576 bytes (1.0 MB) copied, 0.0107194 seconds, 97.8 MB/s
+#创建一个大小为1M文件，该文件一个块是1024字节，一共是1024块（刚好1M)，用/dev/zero文件内容填充它。输出创建到：testzero文件
+[chengmo@centos5 shell]$dd if=/dev/zero of=/dev/磁盘分区
+#这个命令一定不要随便用，有点象windows里面的粉碎文件工具。不过它是用x00填充整个分区。这样做数据是不可以恢复的了。
+[chengmo@centos5 shell]$cat /dev/zero>testinputzero
+#这个命令也不能随便使用咯，/dev/zero设备一个特效是，如果你读取的话，是一个死循环会输出无穷的\x00，这样你将创建一个用\x00填充的文件。如果你没有限制该用户磁盘配额。它将耗尽整个磁盘空间。
+```
+
+在linux资源配额限制里面，如果没有现在普通用户的磁盘空间利用，或内存使用。一个普通用户就可以通过上面方法一会就塞满整个磁盘。也可以通过while(true) {fork……}类程序，启动无限线程，耗尽整个系统内存。
+
+/dev/full设备
+
+类Unix系统中，/dev/full（常满设备）是一个特殊设备文件，总是在向其写入时返回设备无剩余空间（错误码为ENOSPC），读取时则与/dev/zero相似，返回无限的空字符(NULL, ASCII NUL, 0×00)。这个设备通常被用来测试程序在遇到磁盘无剩余空间错误时的行为。
+
+如：
+
+```
+[chengmo@centos5 shell]$ echo 'chengmo' >/dev/full
+-bash: echo: write error: 设备上没有空间
+[chengmo@centos5 shell]$ echo $?
+1
+#命令执行返回错误
+```
+
+/dev/random[urandom]
+
+在类UNIX操作系统中，/dev/random是一个特殊的设备文件，可以用作随机数发生器或伪随机数发生器。它允许程序访问来自设备驱动程序或其它来源的背景噪声。常用作随机数发生器。具体参考：linux shell实现随机数多种方法（date,random,uuid)
+
+/dev/fd
+
+记录用户打开的文件描述符
+
+```
+[chengmo@centos5 shell]$ ls /dev/fd/
+0 1 2 3
+```
+
+详细参考：
+
+linux shell数据重定向（输入重定向与输出重定向）详细分析 文件描述符介绍。
+
+/dev/tcp[udp]/host/port
+
+读取该类形式设备，将会创建一个连接host主机port端口的tcp[upd]连接。打开一个socket通讯接口。
+
+详细使用可以参考：
+
+linux shell 脚本实现tcp/upd协议通讯（重定向应用）
+
+/dev/loop
+
+在类UNIX操作系统中，Loop设备 可以把loop 文件，作为块设备挂载使用。
+
+如：
+
+```
+[chengmo@centos5 shell]$mount -o loop example.img /home/chengmo/img
+#将img镜像文件挂载到/home/chengmo/img目录下面，有了这个设备，我们不需要通过虚拟光驱就可以读虚拟磁盘格式的文件。
+```

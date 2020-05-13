@@ -1,0 +1,26 @@
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] MongoDB starting : pid=26118 port=27017 dbpath=/root/RaphaelBlog/data/db 64-bit host=qqfhome
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] db version v3.2.10
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] modules: none
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] build environment:
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten]     distmod: rhel70
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten]     distarch: x86_64
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-11-05T11:19:28.861+0000 I CONTROL  [initandlisten] options: { processManagement: { fork: true }, storage: { dbPath: "/root/RaphaelBlog/data/db" }, systemLog: { destination: "file", path: "/root/RaphaelBlog/data/mongo.log" } }
+2016-11-05T11:19:28.889+0000 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-11-05T11:19:28.958+0000 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2016-11-05T11:19:28.958+0000 I CONTROL  [initandlisten] 
+2016-11-05T11:19:28.960+0000 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/root/RaphaelBlog/data/db/diagnostic.data'
+2016-11-05T11:19:28.963+0000 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-11-05T11:19:28.972+0000 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-11-05T12:06:52.958+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58206 #1 (1 connection now open)
+2016-11-05T12:06:53.004+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58208 #2 (2 connections now open)
+2016-11-05T12:06:53.038+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58210 #3 (3 connections now open)
+2016-11-05T12:06:53.572+0000 I NETWORK  [conn1] end connection 127.0.0.1:58206 (2 connections now open)
+2016-11-05T12:06:53.581+0000 I NETWORK  [conn3] end connection 127.0.0.1:58210 (1 connection now open)
+2016-11-05T12:06:53.581+0000 I NETWORK  [conn2] end connection 127.0.0.1:58208 (0 connections now open)
+2016-11-05T12:09:34.506+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58224 #4 (1 connection now open)
+2016-11-05T12:09:40.707+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58228 #5 (2 connections now open)
+2016-11-05T12:09:41.129+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:58232 #6 (3 connections now open)

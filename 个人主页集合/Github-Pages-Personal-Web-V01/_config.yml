@@ -1,0 +1,84 @@
+# Site settings
+title: QQF's Notebook
+SEOTitle: QQF's Notebook
+header-img: img/home-bg.png
+email: qqf1403321992@gmail.com
+description: "这里是钱奇峰的个人记事本"
+keyword: "QQF, 钱奇峰"
+url: "https://qqfraphael.github.io"
+site.baseurl: ""
+
+# SNS settings
+#RSS: true
+zhihu_username:     "sheng-ruo-xia-yun"
+github_username:    "QQFRaphael"
+#facebook_username:  "qifeng.qian.33"
+#twitter_username:   "QQFRaphael"
+#linkedin_username:  "qifeng-qian-a5a5b8b9"
+#stackoverflow_username:    "7273229"
+#weibo_username: "2613735005"
+weixin_username:    "qqf"
+
+# Build settings
+highlighter: rouge
+permalink: pretty
+paginate: 10
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","README.zh.md"]
+anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+gems: [jekyll-paginate]
+
+# Markdown settings
+# replace redcarpet to kramdown,
+# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
+# document: http://jekyllrb.com/docs/configuration/#kramdown
+markdown: kramdown
+kramdown:
+  input: GFM                            # use Github Flavored Markdown !important
+
+# Disqus settings
+#disqus_username: _your_disqus_short_name_
+
+# Duoshuo settings
+duoshuo_username: "qqf"
+# Share component is depend on Comment so we can NOT use share only.
+duoshuo_share: true                     # set to false if you want to use Comment without Sharing
+
+# Analytics settings
+# Baidu Analytics 
+# ba_track_id: [your track id]
+
+# Google Analytics
+ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+ga_domain: qqfraphael.github.io
+
+
+
+# Sidebar settings
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "Life is a maze and love is a riddle."
+sidebar-avatar: /img/avatar-qqf.png      # use absolute URL, seeing it's used in both `/` and `/about/`
+
+
+
+# Featured Tags
+featured-tags: true                     # whether or not using Feature-Tags
+featured-condition-size: 1              # A tag will be featured if the size of it is more than this condition value
+
+
+
+# Progressive Web Apps
+chrome-tab-theme-color: "#000000"
+service-worker: true
+
+
+
+# Friends
+friends: [
+    #{
+    #    title: "逸忆",
+    #    href: "https://www.zhihu.com/people/yi-yi-58"
+    #},
+]

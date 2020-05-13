@@ -1,0 +1,955 @@
+---
+layout:     post
+title:      "awk"
+subtitle:   "awk"
+date:       2017-08-19
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: true
+tags:
+    - Linux系统运维与服务器管理
+---
+
+# 简介
+
+awk是一个强大的文本分析工具，相对于grep的查找，sed的编辑，awk在其对数据分析并生成报告时，显得尤为强大。简单来说awk就是把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行各种分析处理。
+
+awk有3个不同版本: awk、nawk和gawk，未作特别说明，一般指gawk，gawk 是 AWK 的 GNU 版本。
+
+awk其名称得自于它的创始人 Alfred Aho 、Peter Weinberger 和 Brian Kernighan 姓氏的首个字母。实际上 AWK 的确拥有自己的语言： AWK 程序设计语言 ， 三位创建者已将它正式定义为“样式扫描和处理语言”。它允许您创建简短的程序，这些程序读取输入文件、为数据排序、处理数据、对输入执行计算以及生成报 表，还有无数其他的功能。
+
+# 使用方法
+
+
+```
+awk '{pattern + action}' {filenames}
+```
+
+尽管操作可能会很复杂，但语法总是这样，其中 pattern 表示 awk 在数据中查找的内容，而 action 是在找到匹配内容时所执行的一系列命令。花括号（{}）不需要在程序中始终出现，但它们用于根据特定的模式对一系列指令进行分组。 pattern就是要表示的正则表达式，用斜杠括起来。
+
+awk语言的最基本功能是在文件或者字符串中基于指定规则浏览和抽取信息，awk抽取信息后，才能进行其他文本操作。完整的awk脚本通常用来格式化文本文件中的信息。
+
+通常，awk是以文件的一行为处理单位的。awk每接收文件的一行，然后执行相应的命令，来处理文本。
+
+# 调用awk
+
+有三种方式调用awk
+
+1.命令行方式
+
+```
+awk [-F  field-separator]  'commands'  input-file(s)
+```
+
+其中，commands 是真正awk命令，[-F域分隔符]是可选的。 input-file(s) 是待处理的文件。
+在awk中，文件的每一行中，由域分隔符分开的每一项称为一个域。通常，在不指名-F域分隔符的情况下，默认的域分隔符是空格。
+
+2.shell脚本方式
+
+将所有的awk命令插入一个文件，并使awk程序可执行，然后awk命令解释器作为脚本的首行，一遍通过键入脚本名称来调用。相当于shell脚本首行的：`#!/bin/sh`可以换成：`#!/bin/awk`
+
+3.将所有的awk命令插入一个单独文件，然后调用：
+`awk -f awk-script-file input-file(s)`
+其中，-f选项加载awk-script-file中的awk脚本，input-file(s)跟上面的是一样的。
+
+# 实例
+
+假设`last -n 5`的输出如下
+
+```
+[root@www ~]# last -n 5 <==仅取出前五行
+root     pts/1   192.168.1.100  Tue Feb 10 11:21   still logged in
+root     pts/1   192.168.1.100  Tue Feb 10 00:46 - 02:28  (01:41)
+root     pts/1   192.168.1.100  Mon Feb  9 11:41 - 18:30  (06:48)
+dmtsai   pts/1   192.168.1.100  Mon Feb  9 11:41 - 11:41  (00:00)
+root     tty1                   Fri Sep  5 14:09 - 14:10  (00:01)
+```
+
+如果只是显示最近登录的5个帐号
+
+```
+#last -n 5 | awk  '{print $1}'
+root
+root
+root
+dmtsai
+root
+```
+
+awk工作流程是这样的：读入有'\n'换行符分割的一条记录，然后将记录按指定的域分隔符划分域，填充域，$0则表示所有域,$1表示第一个域,$n表示第n个域。默认域分隔符是"空白键" 或 "[tab]键",所以$1表示登录用户，$3表示登录用户ip,以此类推。
+
+如果只是显示/etc/passwd的账户
+
+```
+#cat /etc/passwd |awk  -F ':'  '{print $1}'  
+root
+daemon
+bin
+sys
+```
+
+这种是awk+action的示例，每行都会执行action{print $1}。
+-F指定域分隔符为':'。
+
+如果只是显示/etc/passwd的账户和账户对应的shell,而账户与shell之间以tab键分割
+
+```
+#cat /etc/passwd |awk  -F ':'  '{print $1"\t"$7}'
+root    /bin/bash
+daemon  /bin/sh
+bin     /bin/sh
+sys     /bin/sh
+```
+
+如果只是显示/etc/passwd的账户和账户对应的shell,而账户与shell之间以逗号分割,而且在所有行添加列名name,shell,在最后一行添加"blue,/bin/nosh"。
+
+```
+cat /etc/passwd |awk  -F ':'  'BEGIN {print "name,shell"}  {print $1","$7} END {print "blue,/bin/nosh"}'
+name,shell
+root,/bin/bash
+daemon,/bin/sh
+bin,/bin/sh
+sys,/bin/sh
+....
+blue,/bin/nosh
+```
+
+awk工作流程是这样的：先执行BEGIN，然后读取文件，读入有/n换行符分割的一条记录，然后将记录按指定的域分隔符划分域，填充域，$0则表示所有域,$1表示第一个域,$n表示第n个域,随后开始执行模式所对应的动作action。接着开始读入第二条记录······直到所有的记录都读完，最后执行END操作。
+
+搜索/etc/passwd有root关键字的所有行
+
+```
+#awk -F: '/root/' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+```
+
+这种是pattern的使用示例，匹配了pattern(这里是root)的行才会执行action(没有指定action，默认输出每行的内容)。
+
+搜索支持正则，例如找root开头的: awk -F: '/^root/' /etc/passwd
+
+搜索/etc/passwd有root关键字的所有行，并显示对应的shell
+
+```
+# awk -F: '/root/{print $7}' /etc/passwd             
+/bin/bash
+```
+
+这里指定了action{print $7}
+
+# awk内置变量
+
+awk有许多内置变量用来设置环境信息，这些变量可以被改变，下面给出了最常用的一些变量。
+
+```
+$0                 当前记录（作为单个变量）
+$1-$n              当前记录的第n个字段，字段间由FS分隔
+ARGC               命令行参数个数
+ARGV               命令行参数排列
+ENVIRON            支持队列中系统环境变量的使用
+FILENAME           awk浏览的文件名
+FNR                浏览文件的记录数
+FS                 设置输入域分隔符，等价于命令行 -F选项
+NF                 浏览记录的域的个数
+NR                 已读的记录数
+OFS                输出域分隔符
+ORS                输出记录分隔符
+RS                 控制记录分隔符
+IGNORECASE         如果为真，则进行忽略大小写的匹配
+ARGIND             当前被处理文件的ARGV标识符
+CONVFMT            数字转换格式%.6g
+ERRNO              UNIX系统错误消息
+FILEWIDTHS         输入字段宽度的空白分隔字符串
+OFMT               数字的输出格式%.6g
+RSTART             被匹配函数匹配的字符串首
+RLENGTH            被匹配函数匹配的字符串长度
+```
+
+此外,$0变量是指整条记录。$1表示当前行的第一个域,$2表示当前行的第二个域,......以此类推。
+
+统计/etc/passwd:文件名，每行的行号，每行的列数，对应的完整行内容:
+
+```
+#awk  -F ':'  '{print "filename:" FILENAME ",linenumber:" NR ",columns:" NF ",linecontent:"$0}' /etc/passwd
+filename:/etc/passwd,linenumber:1,columns:7,linecontent:root:x:0:0:root:/root:/bin/bash
+filename:/etc/passwd,linenumber:2,columns:7,linecontent:daemon:x:1:1:daemon:/usr/sbin:/bin/sh
+filename:/etc/passwd,linenumber:3,columns:7,linecontent:bin:x:2:2:bin:/bin:/bin/sh
+filename:/etc/passwd,linenumber:4,columns:7,linecontent:sys:x:3:3:sys:/dev:/bin/sh
+```
+
+使用printf替代print,可以让代码更加简洁，易读
+
+`awk  -F ':'  '{printf("filename:%10s,linenumber:%s,columns:%s,linecontent:%s\n",FILENAME,NR,NF,$0)}' /etc/passwd`
+
+## 常用操作
+
+```
+[chengmo@ localhost ~]$ awk '/^root/{print $0}' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+```
+
+/^root/ 为选择表达式，$0代表是逐行
+
+## 设置字段分隔符号(FS使用方法）
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":"}/^root/{print $1,$NF}' /etc/passwd
+root /bin/bash
+```
+
+FS为字段分隔符，可以自己设置，默认是空格，因为passwd里面是”:”分隔，所以需要修改默认分隔符。NF是字段总数，$0代表当前行记录，$1-$n是当前行，各个字段对应值。
+
+## 记录条数(NR,FNR使用方法)
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":"}{print NR,$1,$NF}' /etc/passwd
+1 root /bin/bash
+2 bin /sbin/nologin
+3 daemon /sbin/nologin
+4 adm /sbin/nologin
+5 lp /sbin/nologin
+6 sync /bin/sync
+7 shutdown /sbin/shutdown
+……
+```
+
+NR得到当前记录所在行
+
+## 设置输出字段分隔符（OFS使用方法)
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":";OFS="^^"}/^root/{print FNR,$1,$NF}' /etc/passwd
+1^^root^^/bin/bash
+```
+
+OFS设置默认字段分隔符
+
+## 设置输出行记录分隔符(ORS使用方法）
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":";ORS="^^"}{print FNR,$1,$NF}' /etc/passwd
+1 root /bin/bash^^2 bin /sbin/nologin^^3 daemon /sbin/nologin^^4 adm /sbin/nologin^^5 lp /sbin/nologin
+```
+
+从上面看，ORS默认是换行符，这里修改为：”^^”，所有行之间用”^^”分隔了。
+
+## 输入参数获取(ARGC ,ARGV使用）
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":";print "ARGC="ARGC;for(k in ARGV) {print k"="ARGV[k]; }}' /etc/passwd
+ARGC=2
+0=awk
+1=/etc/passwd
+```
+
+ARGC得到所有输入参数个数，ARGV获得输入参数内容，是一个数组。
+
+## 获得传入的文件名(FILENAME使用)
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{FS=":";print FILENAME}{print FILENAME}' /etc/passwd
+/etc/passwd
+```
+
+FILENAME,$0-$N,NF 不能使用在BEGIN中，BEGIN中不能获得任何与文件记录操作的变量。
+
+## 获得linux环境变量（ENVIRON使用）
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{print ENVIRON["PATH"];}' /etc/passwd
+/usr/lib/qt-3.3/bin:/usr/kerberos/bin:/usr/lib/ccache:/usr/lib/icecc/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/java/jdk1.5.0_17/bin:/usr/java/jdk1.5.0_17/jre/bin:/usr/local/mysql/bin:/home/web97/bin
+```
+
+ENVIRON是子典型数组，可以通过对应键值获得它的值。
+
+## 输出数据格式设置：(OFMT使用）
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{OFMT="%.3f";print 2/3,123.11111111;}' /etc/passwd
+0.667 123.111
+```
+
+OFMT默认输出格式是：%.6g 保留六位小数，这里修改OFMT会修改默认数据输出格式。
+
+## 按宽度指定分隔符（FIELDWIDTHS使用）
+
+```
+[chengmo@ localhost ~]$ echo 20100117054932 | awk ‘BEGIN{FIELDWIDTHS=”4 2 2 2 2 3″}{print $1″-”$2″-”$3,$4″:”$5″:”$6}’
+2010-01-17 05:49:32
+```
+
+FIELDWIDTHS其格式为空格分隔的一串数字，用以对记录进行域的分隔，FIELDWIDTHS=”4 2 2 2 2 2″就表示$1宽度是4，$2是2，$3是2 …. 。这个时候会忽略：FS分隔符。
+
+## RSTART RLENGTH使用
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{start=match("this is a test",/[a-z]+$/); print start, RSTART, RLENGTH }'
+11 11 4
+[chengmo@ localhost ~]$ awk 'BEGIN{start=match("this is a test",/^[a-z]+$/); print start, RSTART, RLENGTH }'
+0 0 –1
+```
+RSTART 被匹配正则表达式首位置，RLENGTH 匹配字符长度，没有找到为-1.
+
+# print和printf
+
+awk中同时提供了print和printf两种打印输出的函数。
+
+其中print函数的参数可以是变量、数值或者字符串。字符串必须用双引号引用，参数用逗号分隔。如果没有逗号，参数就串联在一起而无法区分。这里，逗号的作用与输出文件的分隔符的作用是一样的，只是后者是空格而已。
+
+printf函数，其用法和c语言中printf基本相似,可以格式化字符串,输出复杂时，printf更加好用，代码更易懂。
+
+# awk编程
+
+## 变量和赋值
+
+除了awk的内置变量，awk还可以自定义变量。
+
+下面统计/etc/passwd的账户人数
+
+```
+awk '{count++;print $0;} END{print "user count is ", count}' /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+......
+user count is  40
+```
+ 
+count是自定义变量。之前的action{}里都是只有一个print,其实print只是一个语句，而action{}可以有多个语句，以;号隔开。
+
+这里没有初始化count，虽然默认是0，但是妥当的做法还是初始化为0:
+
+```
+awk 'BEGIN {count=0;print "[start]user count is ", count} {count=count+1;print $0;} END{print "[end]user count is ", count}' /etc/passwd
+[start]user count is  0
+root:x:0:0:root:/root:/bin/bash
+...
+[end]user count is  40
+```
+
+统计某个文件夹下的文件占用的字节数
+
+`ls -l |awk 'BEGIN {size=0;} {size=size+$5;} END{print "[end]size is ", size}'
+[end]size is  8657198`
+
+如果以M为单位显示:
+
+`ls -l |awk 'BEGIN {size=0;} {size=size+$5;} END{print "[end]size is ", size/1024/1024,"M"}' 
+[end]size is  8.25889 M`
+
+注意，统计不包括文件夹的子目录。
+
+## 条件语句
+
+awk中的条件语句是从C语言中借鉴来的，见如下声明方式：
+
+```
+if (expression) {
+    statement;
+    statement;
+    ... ...
+}
+
+if (expression) {
+    statement;
+} else {
+    statement2;
+}
+
+if (expression) {
+    statement1;
+} else if (expression1) {
+    statement2;
+} else {
+    statement3;
+}
+```
+
+统计某个文件夹下的文件占用的字节数,过滤4096大小的文件(一般都是文件夹):
+
+`ls -l |awk 'BEGIN {size=0;print "[start]size is ", size} {if($5!=4096){size=size+$5;}} END{print "[end]size is ", size/1024/1024,"M"}' 
+[end]size is  8.22339 M`
+
+## 循环语句
+
+awk中的循环语句同样借鉴于C语言，支持while、do/while、for、break、continue，这些关键字的语义和C语言中的语义完全相同。
+
+## 数组
+
+因为awk中数组的下标可以是数字和字母，数组的下标通常被称为关键字(key)。值和关键字都存储在内部的一张针对key/value应用hash的表 格里。由于hash不是顺序存储，因此在显示数组内容时会发现，它们并不是按照你预料的顺序显示出来的。数组和变量一样，都是在使用时自动创建的，awk 也同样会自动判断其存储的是数字还是字符串。一般而言，awk中的数组用来从记录中收集信息，可以用于计算总和、统计单词以及跟踪模板被匹配的次数等等。
+
+显示/etc/passwd的账户
+
+```
+awk -F ':' 'BEGIN {count=0;} {name[count] = $1;count++;}; END{for (i = 0; i < NR; i++) print i, name[i]}' /etc/passwd
+0 root
+1 daemon
+2 bin
+3 sys
+4 sync
+5 games
+......
+```
+
+这里使用for循环遍历数组
+
+# awk 多行合并
+
+awk next语句使用：在循环逐行匹配，如果遇到next,就会跳过当前行，直接忽略下面语句。而进行下一行匹配。
+
+text.txt 内容是：
+
+```
+a
+b
+c
+d
+e
+```
+
+```
+[chengmo@centos5 shell]$ awk 'NR%2==1{next}{print NR,$0;}' text.txt
+2 b
+4 d
+```
+
+当记录行号除以2余 1，就跳过当前行。下面的print NR,$0也不会执行。 下一行开始，程序有开始判断NR%2 值。这个时候记录行号是：2 ，就会执行下面语句块：’print NR,$0′
+
+awk next使用实例：
+
+```
+web01[192.168.2.100]
+httpd ok
+tomcat ok
+sendmail ok
+web02[192.168.2.101]
+httpd ok
+postfix ok
+web03[192.168.2.102]
+mysqld ok
+httpd ok
+```
+
+需要通过awk将输出格式变成：
+
+```
+web01[192.168.2.100]: httpd ok
+web01[192.168.2.100]: tomcat ok
+web01[192.168.2.100]: sendmail ok
+web02[192.168.2.101]: httpd ok
+web02[192.168.2.101]: postfix ok
+web03[192.168.2.102]: mysqld ok
+web03[192.168.2.102]: httpd ok
+```
+
+分析发现需要将包含有“web”行进行跳过，然后需要将内容与下面行合并为一行。
+
+```
+[chengmo@centos5 shell]$ awk '/^web/{T=$0;next;}{print T":\t"$0;}' test.txt
+web01[192.168.2.100]: httpd ok
+web01[192.168.2.100]: tomcat ok
+web01[192.168.2.100]: sendmail ok
+web02[192.168.2.101]: httpd ok
+web02[192.168.2.101]: postfix ok
+web03[192.168.2.102]: mysqld ok
+web03[192.168.2.102]: httpd ok
+```
+
+next在多行合并，以及选择性输出方面，非常方便。大家在使用时候不妨试试。
+
+# 多文件操作
+
+我们经常会将2个有关联文本文件进行合并处理。分别从不同文件获取需要的列，然后，整体输出到一起。awk进行多文件处理时候，常常会遇到2个方面问题，第一个是怎么样合并多个文件为一个文件。第二个问题就是怎么样将多行合并为一行显示。我这里说下我的处理2种方法，还有实现思路。
+
+实例文本：
+
+```
+[chengmo@centos5 shell]$ awk 'FNR==1{print "\r\n"FILENAME}{print $0}' a.txt b.txt
+a.txt
+100 wang man
+200 wangsan woman
+300 wangming man
+400 wangzheng man
+b.txt
+100 90 80
+200 80 70
+300 60 50
+400 70 20
+```
+
+需要合并得到结果：
+
+```
+100 wang man 90 80
+200 wangsan woman 80 70
+300 wangming man 60 50
+400 wangzheng man 70 20
+```
+
+## awk多文件操作方法一
+
+实现思路：
+
+通过外部命令合并文件，然后通过排序，然后通过awk进行合并操作。
+
+首先：
+
+```
+[chengmo@centos5 shell]$ cat a.txt b.txt | sort -n -k1 |awk '{print}'
+100 90 80
+100 wang man
+200 80 70
+200 wangsan woman
+300 60 50
+300 wangming man
+400 70 20
+400 wangzheng man
+```
+
+现在需要把：第一列相同的处理合并到一行，这里需要用“next”语句。
+
+继续：
+
+```
+[chengmo@centos5 shell]$ cat a.txt b.txt | sort -n -k1 |awk 'NR%2==1{fd1=$2"\t"$3;next}{print $0"\t"fd1}'
+100 wang man 90 80
+200 wangsan woman 80 70
+300 wangming man 60 50
+400 wangzheng man 70 20
+```
+
+需要把几行合并，经常用到方法是：NR%num 然后将行值保存下来，next该行。在输出时候打印出来。
+
+## awk多文件操作方法二
+
+实现思路
+
+不借助第3放工具打开，直接通过awk 打开多个文件。然后可以通过：FILENAME获得当前处理文件名。NR总记录 FNR当前文件记录,以及ARGC传入参数总数，ARGV是数组，各个参数值。
+
+看下这些实例：
+
+```
+[chengmo@centos5 shell]$ awk 'BEGIN{print ARGC,ARGV[0],ARGV[1],ARGV[2]}{print FILENAME,NR,FNR,$0}' a.txt b.txt
+3 awk a.txt b.txt
+a.txt 1 1 100 wang man
+a.txt 2 2 200 wangsan woman
+a.txt 3 3 300 wangming man
+a.txt 4 4 400 wangzheng man
+b.txt 5 1 100 90 80
+b.txt 6 2 200 80 70
+b.txt 7 3 300 60 50
+b.txt 8 4 400 70 20
+```
+
+程序代码：
+
+```
+[chengmo@centos5 shell]$ awk '
+BEGIN{
+if(ARGC<3)
+{
+exit 1;
+}
+file="";
+}
+{
+aData[FILENAME,$1]=ARGV[1]==FILENAME?$0:$2"\t"$3;
+}
+END{
+for(k in aData)
+{
+split(k,idx,SUBSEP);
+if(idx[1]==ARGV[1] && (ARGV[2],idx[2]) in aData)
+{
+print aData[ARGV[1],idx[2]],aData[ARGV[2],idx[2]] | "sort -n -k1";
+}
+}
+}' a.txt b.txt
+100 wang man 90 80
+200 wangsan woman 80 70
+300 wangming man 60 50
+400 wangzheng man 70 20
+```
+
+代码说明：
+
+这里用到2维数组，aData[文件名,关联列对应值] ,这种方法可以将多个文件内容。放入一个统一二维数组。然后循环数组，通过if((i,j} in array) 查找对应列值，在其它文件中是否存在。
+
+# 字符串连接操作
+
+awk 中数据类型，是不需要定义，自适应的。 有时候需要强制转换。我们可以通过下面操作完成。
+
+## awk字符串转数字
+
+```
+[chengmo@centos5 ~]$ awk 'BEGIN{a="100";b="10test10";print (a+b+0);}'
+110
+```
+
+只需要将变量通过”+”连接运算。自动强制将字符串转为整型。非数字变成0，发现第一个非数字字符，后面自动忽略。
+
+## awk数字转为字符串
+
+```
+[chengmo@centos5 ~]$ awk 'BEGIN{a=100;b=100;c=(a""b);print c}'
+100100
+```
+
+只需要将变量与””符号连接起来运算即可。
+
+## awk字符串连接操作
+
+```
+[chengmo@centos5 ~]$ awk 'BEGIN{a="a";b="b";c=(a""b);print c}'
+ab
+[chengmo@centos5 ~]$ awk 'BEGIN{a="a";b="b";c=(a+b);print c}'
+0
+```
+
+字符串连接操作通”二“，”+”号操作符。模式强制将左右2边的值转为 数字类型。然后进行操作。
+
+# 数组排序
+
+由于awk数组，是关联数组。for…in循环输出时候，默认打印出来是无序数组。
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{info = "this is a test";split(info,tA," ");for(k in tA){print k,tA[k];}}'
+4 test
+1 this
+2 is
+3 a
+```
+
+如果需要按照顺序输出，通过键值定位方式输出。
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{info = "this is a test";slen=split(info,tA," ");for(i=1;i<=slen;i++){print i,tA[i];}}'
+1 this
+2 is
+3 a
+4 test
+```
+
+## 通过内置函数（asort,asorti使用) awk 3.1以上版本才支持
+
+### asort使用说明
+
+srcarrlen=asort[srcarr,dscarr] 默认返回值是：原数组长度，传入参数dscarr则将排序后数组赋值给dscarr.
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{
+a[100]=100;
+a[2]=224;
+a[3]=34;
+slen=asort(a,tA);
+for(i=1;i<=slen;i++)
+{print i,tA[i];}
+}'
+1 34
+2 100
+3 224
+```
+
+asort只对值进行了排序，因此丢掉原先键值。
+
+### asorti 使用说明
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{
+a["d"]=100;
+a["a"]=224;
+a["c"]=34;
+slen=asorti(a,tA);
+for(i=1;i<=slen;i++)
+{print i,tA[i],a[tA[i]];}
+}'
+1 a 224
+2 c 34
+3 d 100
+```
+
+asorti对键值 进行排序（字符串类型），将生成新的数组放入：tA中。
+
+## 通过管道发送到sort排序
+
+```
+[chengmo@ localhost ~]$awk 'BEGIN{
+a[100]=100;
+a[2]=224;
+a[3]=34;
+for(i in a)
+{print i,a[i] | "sort -r -n -k2";}
+}'
+2 224
+100 100
+3 34
+```
+
+通过管道，发送到外部程序“sort”排序，-r 从大到小，-n 按照数字排序，-k2 以第2列排序。通过将数据丢给第3方的sort命令，所有问题变得非常简单。如果以key值排序 –k2 变成 -k1即可。
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{
+a[100]=100;
+a[2]=224;
+a[3]=34;
+for(i in a)
+{print i,a[i] | "sort -r -n -k1";}
+}'
+100 100
+3 34
+2 224
+```
+
+## 自定义排序函数
+
+awk自定义函数结构：
+
+```
+function funname(p1,p2,p3)
+{
+staction;
+return value;
+}
+```
+
+以上是：awk自定义函数表示方式，默认传入参数都是以引用方式传入，return值，只能是字符型或者数值型。 不能返回数组类型。 如果返回数组类型。需要通过形参 方式传入。再获得。
+
+awk返回数组类型
+
+```
+awk 'function test(ary){
+for(i=0;i<10;i++){
+ary[i]=i;
+}
+return i;
+}
+BEGIN{
+n=test(array);
+for(i=0;i<n;i++){
+print array[i];
+}
+}
+```
+
+排序函数
+
+```
+#arr 传入一维数组
+
+#key 排序类型 1是按照值排序 2按照键值
+
+#datatype 比较类型 1按照数字排序 2按照字符串排序
+
+#tarr 排序返回的数组
+
+#splitseq 分割字符串 数组中键与值之间分割字符串
+
+#return 数组长度
+
+#实现思路，将原始数组a[‘a’]=100 排序后变成 a[1]=a分隔符100 ，然后按照下标递归显示内容。 本排序使用冒泡方式进行。
+```
+
+```
+function sortArr(arr,key,datatype,tarr,splitseq)
+{
+if(key ~ /[^1-2]/)
+{return tarr;}
+for(k in arr)
+{
+tarr[++alen]=(k""splitseq""arr[k]);
+}
+for(m=1;m<=alen;m++)
+{
+for(n=1;n<=alen-m-1;n++)
+{
+split(tarr[m],tm,splitseq);
+split(tarr[n+1],tn,splitseq);
+tnum=tarr[m];
+if(datatype==1)
+{
+if(tm[key]+0<tn[key]+0)
+{
+tarr[m]=tarr[n+1];
+tarr[n+1]=tnum;
+}
+}
+else
+{
+if((tm[key]"") < (tn[key]""))
+{
+tarr[m]=tarr[n+1];
+tarr[n+1]=tnum;
+}
+}
+}
+}
+return alen;
+}
+```
+
+完整代码如下：
+
+```
+[chengmo@centos5 ~]$ awk 'BEGIN{
+a["a"]=100;
+a["b"]=110;
+a["c"]=10;
+splitseq="%%";
+alen=sortArr(a,2,1,tarr,splitseq);
+for(m=1;m<=alen;m++)
+{
+split(tarr[m],ta,splitseq);
+print m,ta[1],ta[2];
+}
+}
+function sortArr(arr,key,datatype,tarr,splitseq)
+{
+if(key ~ /[^1-2]/)
+{return tarr;}
+for(k in arr)
+{
+tarr[++alen]=(k""splitseq""arr[k]);
+}
+for(m=1;m<=alen;m++)
+{
+for(n=1;n<=alen-m-1;n++)
+{
+split(tarr[m],tm,splitseq);
+split(tarr[n+1],tn,splitseq);
+tnum=tarr[m];
+if(datatype==1)
+{
+if(tm[key]+0<tn[key]+0)
+{
+tarr[m]=tarr[n+1];
+tarr[n+1]=tnum;
+}
+}
+else
+{
+if((tm[key]"") < (tn[key]""))
+{
+tarr[m]=tarr[n+1];
+tarr[n+1]=tnum;
+}
+}
+}
+}
+return alen;
+}
+'
+1 b 110
+2 a 100
+3 c 10
+```
+
+以上是awk数组排序一些方法。对于少量数据排序，就性能而言，使用自定义函数性能要高，不需要另外再开启进程。对于大量数据，排序第2种方法还是很不错的。
+
+# 运算符说明
+
+![img](/img/in-post/2017-08-19-awk/01.png)
+
+说明：awk运算符基本与c语言相同。表达式及功能基本相同
+
+## 实例介绍
+
+### awk赋值运算符
+
+a+=5; 等价于：a=a+5; 其它同类
+
+### awk逻辑运算符
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a=1;b=2;print (a>5 && b<=2),(a>5 || b<=2);}'
+0 1
+```
+
+### awk正则运算符
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a="100testa";if(a ~ /^100*/){print "ok";}}'
+ok
+```
+
+### awk关系运算符
+
+如：> < 可以作为字符串比较，也可以用作数值比较，关键看操作数如果是字符串 就会转换为字符串比较。两个都为数字 才转为数值比较。字符串比较：按照ascii码顺序比较。
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a="11";if(a >= 9){print "ok";}}'
+[chengmo@ localhost ~]$ awk 'BEGIN{a=11;if(a >= 9){print "ok";}}'
+ok
+```
+
+### awk算术运算符
+
+说明，所有用作算术运算符 进行操作，操作数自动转为数值，所有非数值都变为0。
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a="b";print a++,++a;}'
+0 2
+```
+
+### 其它运算符
+
+?:运算符
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a="b";print a=="b"?"ok":"err";}'
+ok
+```
+
+in运算符
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{a="b";arr[0]="b";arr[1]="c";print (a in arr);}'
+0
+
+[chengmo@ localhost ~]$ awk 'BEGIN{a="b";arr[0]="b";arr["b"]="c";print (a in arr);}'
+1
+```
+
+in运算符，判断数组中是否存在该键值。
+
+# 获得外部变量（变量传值）
+
+## 获得普通外部变量
+
+```
+[chengmo@ localhost ~]$ test='awk code'
+[chengmo@ localhost ~]$ echo | awk '{print test}' test="$test"
+awk code
+[chengmo@ localhost ~]$ echo | awk test="$test" '{print test}'
+awk: cmd. line:1: fatal: cannot open file `{print test}' for reading (No such file or directory)
+```
+
+格式如：awk ‘{action}’ 变量名=变量值 ，这样传入变量，可以在action中获得值。 注意：变量名与值放到’{action}’后面。
+
+```
+[chengmo@ localhost ~]$ echo | awk ‘BEGIN{print test}’ test=”$test”
+```
+
+这种变量在：BEGIN的action不能获得。
+
+## BEGIN程序块中变量
+
+```
+[chengmo@ localhost ~]$ test='awk code'
+[chengmo@ localhost ~]$ echo | awk -v test="$test" 'BEGIN{print test}'
+awk code
+[chengmo@ localhost ~]$ echo | awk -v test="$test" '{print test}'
+awk code
+```
+
+格式如：awk –v 变量名=变量值 [–v 变量2=值2 …] ‘BEGIN{action}’ 注意：用-v 传入变量可以在3中类型的action 中都可以获得到，但顺序在 action前面。
+
+## 获得环境变量
+
+```
+[chengmo@ localhost ~]$ awk 'BEGIN{for (i in ENVIRON) {print i"="ENVIRON[i];}}'
+AWKPATH=.:/usr/share/awk
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+SELINUX_LEVEL_REQUESTED=
+SELINUX_ROLE_REQUESTED=
+LANG=en_US.UTF-8
+.......
+```
+
+只需要调用：awk内置变量 ENVIRON,就可以直接获得环境变量。它是一个字典数组。环境变量名 就是它的键值。

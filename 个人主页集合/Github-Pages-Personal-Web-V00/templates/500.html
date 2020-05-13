@@ -1,0 +1,9 @@
+{% extends "page.html" %}
+
+{% block title %}Internal Server Error{% endblock %}
+
+{% block pageContent %}
+    <h1>Internal Server Error</h1>
+    <p>Internal Server Error: 500<p>
+    <a href="{{ url_for('index') }}">回到首页</a>
+{% endblock %}

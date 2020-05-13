@@ -1,0 +1,16 @@
+# Dependencies
+markdown:         kramdown
+highlighter:      rouge
+
+# Setup
+title:            QQF
+tagline:          'Home'
+description:      'Life is a maze and love is a riddle'
+
+plugins:
+  - jekyll-feed
+  - jekyll-gist
+  - jekyll-paginate
+
+github:           https://github.com/QQFRaphael
+linkedin:         https://www.linkedin.com/in/qifeng-qian-a5a5b8b9/

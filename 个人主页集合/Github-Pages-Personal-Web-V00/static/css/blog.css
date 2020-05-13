@@ -1,0 +1,116 @@
+/*
+ * Globals
+ */
+
+body {
+  font-family: "Times New Roman", "Microsoft YaHei", "黑体", "宋体", sans-serif;
+  color: #000000;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: 0;
+  font-family: "Times New Roman", "Microsoft YaHei", "黑体", "宋体", sans-serif;
+  font-weight: normal;
+  color: #000000;
+}
+
+
+/*
+ * Override Bootstrap's default container.
+ */
+
+@media (min-width: 1000px) {
+  .container {
+    width: 900px;
+  }
+}
+
+
+/*
+ * Blog name and description
+ */
+
+.blog-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.blog-title {
+  margin-top: 30px;
+  margin-bottom: 0;
+  font-size: 60px;
+  font-weight: normal;
+}
+.blog-description {
+  font-size: 20px;
+  color: #999999;
+}
+
+
+/*
+ * Main column layout
+ */
+
+.blog-main {
+  font-size: 18px;
+  line-height: 1.5;
+  margin-left: 50px;
+}
+
+/* Pagination */
+.pager {
+  margin-bottom: 60px;
+  text-align: left;
+}
+.pager > li > a {
+  width: 140px;
+  padding: 10px 20px;
+  text-align: center;
+  border-radius: 30px;
+}
+
+
+/*
+ * Blog posts
+ */
+
+.blog-post {
+  margin-bottom: 60px;
+  width: 700px
+}
+.blog-post-title {
+  margin-bottom: 5px;
+  font-size: 35px;
+}
+.blog-post-meta {
+  margin-bottom: 20px;
+  color: #999;
+}
+
+
+/*
+ * Footer
+ */
+
+.blog-footer {
+  padding: 40px 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+}
+.blog-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.title-input {
+  border: 0;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid lightgray;
+}

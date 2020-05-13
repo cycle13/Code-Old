@@ -1,0 +1,28 @@
+{% extends "page.html" %}
+
+{% block pageHeader %}
+    <div class="blog-header">
+
+    </div>
+{% endblock %}
+
+{% block title %}
+    主页
+{% endblock %}
+
+{% block pageContent %}
+
+        <div class="col-sm-8 blog-main">
+            {% block blogMain %}
+            {% endblock %}
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};
+    </script>
+    <script src="{{ url_for('static', filename='js/blog.js') }}"></script>
+{% endblock %}

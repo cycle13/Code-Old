@@ -1,0 +1,97 @@
+---
+layout:     post
+title:      "Python f2py"
+subtitle:   "Python f2py"
+date:       2017-10-19
+author:     "QQF"
+header-img: "img/home-bg.png"
+catalog: false
+tags:
+    - Python
+---
+
+对于大气来说，python推广的一大瓶颈是计算性的code有限。比如计算旋度的, 计算散度的。很少有人会费心用python语言来写这些code。我们已经有大量的Fortran code来做这些事情了，为什么要浪费时间再用python重写呢？！
+
+但我们有f2py！这几乎就把我们从崩溃的边缘给拯救出来了。因为这个python应用可以很迅速方便地把Fortran转换为python module。然后就可以方便地用import语句调用。
+
+（f2py是open source的应用，你可以下载。EPD python带有这个应用）
+
+做一个简单的例子，先是一个add.f
+
+```
+====== add.f ======
+      SUBROUTINE ADD(A,B,C)
+      IMPLICIT NONE
+      DOUBLE PRECISION A,B,C
+cf2py intent(in) :: A,B
+cf2py intent(out) :: C
+      C = A + B
+      RETURN
+      END
+====== end =======
+```
+
+上面两行cf2py是f2py所需要的，对于.f来说，只是两行注释。
+
+在命令行输入：
+
+```
+f2py -c -m add add.f
+```
+
+-c是建立.o object file， -m后面跟module名字。由于之前的add.f是subroutine，而f2py转换的对象是module，-m，f2py会封装subroutine。
+
+文件夹里多了一个add.o的文件
+
+进入python, 进行如下操作
+
+```
+>>> import add
+>>> print add.add(5,6)
+11.0
+```
+
+到此，这个简单的Fortran程序就转换成了python的Module了。
+
+可以看到，f2py的转换过程非常简单，再加上大量的Fortran库，我们就可以快速建立大量大气研究可用的module，由于是基于Fortran, 这些Module的运算速度可以非常迅速。而在此基础上，我们可以利用高层次的python平台，对module进行调用，建立一些高级的对象，让我们有更高的科研产出。python以及大量的open source库也就对我们开放了。
+
+之前看到一篇讲把climate model移植到python上的文章。我想，那可能还有些遥远。就算实现，底层的运算也必然是C/C++/FORTRAN（效率更高，速度更快）。但在应用分析方面，python需要的，就是这样一些应用函数的转换。
+
+作为前段时间经常用f2py的人，我来说下感受。
+
+1. 我在我的Win7 64位下跑步起来f2py，查了下发现时EPD python的一个bug，尝试了多种方法，包括安装gfortran等等都无法解决。所以建议想要使用f2py的同学转移到linux环境下。 当然你在win下面能用起来当我没说。
+
+2. f2py对fortran程序的编译也是按照你的fortran编译器来的，所以会有一些细微的区别。常见的比如intel编译器好通过、gfortran编译不好通过的问题也会出现（一般都是一些格式问题，其实没什么太大影响，改改就好了）
+
+3. 编译的时候是可以选择编译器的，在f2py命令里面加入compiler信息就可以实现，详情可以看看手册，有详细介绍。但是需要注意的是，f2py好像还不支持pgi编译器！
+
+4. 需要注意的是，在进行调用的时候，intent（in）的变量里，跟维数有关的变量必须放置在最后。比如我的函数命名为：f(a,b,c,d,n)这里面a、b、c、d都是普通的变量或数组之类的，但是n必须是一个跟维数有关的变量，用来在fortran程序里定义数组时使用。
+
+5. 上面这条里所说的跟维数有关的变量必须放在最后，适用于n也是一个用来传递的变量的情况下。即是说你在使用时希望将维数信息用变量n来进行传递时，那么就得把它放在最后。再换句话说，n就是intent（in）的情况。
+
+6. intent（out）的变量（注意这里限定为out，如果是inout类型的我没试过）可以放在任意位置，也不影响。（就是说不受上面那个跟纬度有关的变量的约束）（另外intent (out)的变量也需要出现在fortran的 subroutine 那一行）
+比如在python里使用一个f2py设置好的函数时：
+```
+import f(a,b,c,d,n)
+x=f(a,b,c,d,n)
+```
+就可以了，而这个函数在对应的fortran程序里面的定义需要这样：
+```
+subroutine f(a,b,c,d,n,x)
+integer::a,b,c,n
+integer,dimension(n)::d,x
+!f2py intent(in)::a,b,c,d,n
+!f2py intent(out)::x
+x=(a*b-c)*d
+return
+end subrountine
+如此。
+```
+
+7. 一般在使用fortran的时候需要注意二维数组的行列关系的问题，即是说fortran里面的数组是（列，行）这样，而python里面是（行，列），不过貌似利用f2py进行传递时，不需要管这个，直接用就行。
+
+8. f2py可以实现module的调用、子程序等等一些列fortran的功能。
+
+说下使用体验。 f2py极大的提高了python的运算效率。我拿这个来写了个小模式来跑，真的是非常快。再加上python的绘图功能和简洁的语言结构，可以说是极大的改进了编程体验。Jonny Lin就用f2py做了个python版的qtcm模式，可以谷歌到。
+
+一言概之，就是如虎添翼吧

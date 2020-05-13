@@ -1,0 +1,86 @@
+---
+layout: page
+title: "About"
+description: "Hey, this is QQF."
+header-img: "img/about-bg.jpg"
+---
+
+<!-- Language Selector -->
+<select class="sel-lang" onchange= "onLanChange(this.options[this.options.selectedIndex].value)">
+    <option value="0" selected> 中文 Chinese </option>
+    <option value="1"> 英文 English </option>
+</select>
+
+<!-- Chinese Version -->
+<div class="zh post-container">
+
+    <!--copied from markdown -->
+    <blockquote><p>Life is a maze，<br>
+    love is a riddle.</p></blockquote>
+
+    <p>Hello，我是<strong>钱奇峰</strong>，一名硕士研究生，目前正在学习大气科学。</p>
+
+    <p>我的经历，请戳👉<a href="/resume">Resume</a>；我的项目与编程经历，请戳👉<a target="_blank" href="http://github.com/QQFRaphael">Github</a>；我在学习中搜集到的一些文章和自己撰写的一些项目的说明总结，请戳👉<a href="/tags">Tags</a>；我的参与的一些项目成果展示，请戳👉<a href="/portfolio">Portfolio</a>。</p>
+
+    <p>这个网站是我的个人笔记本，主要记录一些从各处搜集到的阅读材料，以及保存一些自己写的学习笔记。如果有部分文章涉及到原作者的权益，请与我联系，我会把笔记从网站中移除。</p>
+
+    <p>大气科学方面主要擅长：中尺度对流系统模拟，全球模式，云微物理参数化方案，积云对流参数化方案，资料同化和雷达外推。对数值模式与中尺度系统的其他方面也略知一二。熟练使用大气领域的主要工具。<br/>我擅长的编程语言主要是Python，C，Fortran，Shell，比较熟悉HTML，Javascript，CSS，Java，对C++也略知一二。</p>
+
+    <p>email: qqf1403321992@gmail.com</p>
+</div>
+
+<!-- English Version -->
+<div class="en post-container">
+    <blockquote><p>Life is a maze，<br>
+    love is a riddle.</p></blockquote>
+
+    <p>Hi, I am <strong>Qifeng Qian(钱奇峰)</strong>，you can call me <strong>Raphael</strong>. I'm a graduate student majors in Atmospheric Science.</p>
+
+    <p>My resume，please click 👉<a href="/resume">Resume</a>；My program and coding experience, please click 👉<a target="_blank" href="http://github.com/QQFRaphael">Github</a>；Reading material I collected during studies and some summary of my study and reading, please click 👉<a href="/tags">Tags</a>；Some project I participate, please click 👉<a href="/portfolio">Portfolio</a>。</p>
+
+    <p>This website is just a personal notebook which is used to store reading material colleted from website and library and preserve some notes I wrote. If this behaviour infringe your interests, please contact me and I would remove it from this website.</p>
+
+    <p>I am very famaliar with mesoscale numerical models, weather simulation, global models, microphysics scheme, convective scheme, data assimilation and radar extrapolation. From these stuff you may guess that I focus on weather studies, and you are right. I am also very good at most tools used in atmospheric science. I am very good at programming with Python, C, Fortran and Shell script. I also familiar with HTML, Javascript, CSS and Java. Besides, I also know some C++.</p>
+
+    <p>email: qqf1403321992@gmail.com</p>
+</div>
+
+<!-- Handle Language Change -->
+<script type="text/javascript">
+    // get nodes
+    var $zh = document.querySelector(".zh");
+    var $en = document.querySelector(".en");
+    var $select = document.querySelector("select");
+
+    // bind hashchange event
+    window.addEventListener('hashchange', _render);
+
+    // handle render
+    function _render(){
+        var _hash = window.location.hash;
+        // en
+        if(_hash == "#en"){
+            $select.selectedIndex = 1;
+            $en.style.display = "block";
+            $zh.style.display = "none";
+        // zh by default
+        }else{
+            // not trigger onChange, otherwise cause a loop call.
+            $select.selectedIndex = 0;
+            $zh.style.display = "block";
+            $en.style.display = "none";
+        }
+    }
+
+    // handle select change
+    function onLanChange(index){
+        if(index == 0){
+            window.location.hash = "#zh"
+        }else{
+            window.location.hash = "#en"
+        }
+    }
+
+    // init
+    _render();
+</script>
