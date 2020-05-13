@@ -1,0 +1,87 @@
+{
+    "author": "    ",
+    "background": {
+        "page": "background.html",
+        "persistent": true
+    },
+    "browser_action": {
+
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.sci-hub.io/*",
+                "*://sci-hub.io/*",
+                "*://*.sci-hub.cc/*",
+                "*://sci-hub.cc/*",
+                "*://*.sci-hub.bz/*",
+                "*://sci-hub.bz/*",
+                "*://*.sci-hub.org/*",
+                "*://sci-hub.org/*",
+                "*://*.sci-hub.club/*",
+                "*://sci-hub.club/*",
+                "*://*.sci-hub.ac/*",
+                "*://sci-hub.ac/*",
+                "*://*.sci-hub.tv/*",
+                "*://sci-hub.tv/*",
+                "*://*.sci-hub.tw/*",
+                "*://sci-hub.tw/*",
+                "*://*.sci-hub.hk/*",
+                "*://sci-hub.hk/*",
+                "https://scholar.google.com/*",
+                "https://scholar.google.ru/*",
+                "https://scholar.google.ca/*",
+                "https://scholar.google.uk/*",
+                "https://scholar.google.lv/*",
+                "https://scholar.google.com.ph/*",
+                "https://scholar.google.com.ua/*"
+            ],
+            "js": [
+                "js/jquery/jquery.min.js",
+                "src/inject.js"
+            ],
+            "css": [
+                "css/panel.css"
+            ]
+        }
+    ],
+    "default_locale": "en",
+    "description": "Sci-Hub extension for Chromium browsers",
+    "homepage_url": "https://sci-hub.tv/",
+    "icons": {
+        "16": "icons/icon16.png",
+        "32": "icons/icon32.png",
+        "48": "icons/icon48.png",
+        "64": "icons/icon64.png",
+        "128": "icons/icon128.png"
+    },
+    "manifest_version": 2,
+    "name": "Sci-Hub",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "webRequest",
+        "webRequestBlocking",
+        "*://*.sci-hub.io/*",
+        "*://sci-hub.io/*",
+        "*://*.sci-hub.cc/*",
+        "*://sci-hub.cc/*",
+        "*://*.sci-hub.bz/*",
+        "*://sci-hub.bz/*",
+        "*://*.sci-hub.org/*",
+        "*://sci-hub.org/*",
+        "*://*.sci-hub.ac/*",
+        "*://sci-hub.ac/*",
+        "*://sci-hub.tw/*",
+        "*://*.sci-hub.tw/*",
+        "*://sci-hub.hk/*",
+        "*://*.sci-hub.hk/*",
+        "*://sci-hub.tv/*",
+        "*://*.sci-hub.tv/*"
+    ],
+    "version": "0.0.9",
+    "-ms-preload": {
+        "backgroundScript": "backgroundScriptsAPIBridge.js",
+        "contentScript": "contentScriptsAPIBridge.js"
+    }
+}

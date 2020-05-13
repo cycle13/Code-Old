@@ -1,0 +1,62 @@
+{
+  "name": "Sci-Hub",
+  "version": "0.0.9",
+  "manifest_version": 2,
+  "description": "Sci-Hub extension for Chromium browsers",
+  "homepage_url": "https://sci-hub.tv/",
+   "update_url": "https://sci-hub.tv/update",
+ "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "64": "icons/icon64.png",
+    "128": "icons/icon128.png"
+  },
+  "default_locale": "en",
+  "permissions": ["activeTab","tabs", "webRequest", "webRequestBlocking", "*://*.sci-hub.io/*", "*://sci-hub.io/*", "*://*.sci-hub.cc/*", "*://sci-hub.cc/*", "*://*.sci-hub.bz/*", "*://sci-hub.bz/*", "*://*.sci-hub.org/*", "*://sci-hub.org/*", "*://*.sci-hub.ac/*", "*://sci-hub.ac/*", "*://sci-hub.tw/*", "*://*.sci-hub.tw/*", "*://sci-hub.hk/*", "*://*.sci-hub.hk/*", "*://sci-hub.tv/*", "*://*.sci-hub.tv/*"],
+  "browser_action": {
+    "default_icon": "icons/icon48.png"
+  },
+  "background": {
+    "scripts": ["src/sci-hub-fy.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+    "*://*.sci-hub.io/*",
+    "*://sci-hub.io/*",
+    "*://*.sci-hub.cc/*",
+    "*://sci-hub.cc/*",
+    "*://*.sci-hub.bz/*",
+    "*://sci-hub.bz/*",
+    "*://*.sci-hub.org/*",
+    "*://sci-hub.org/*",
+    "*://*.sci-hub.club/*",
+    "*://sci-hub.club/*",
+    "*://*.sci-hub.ac/*",
+    "*://sci-hub.ac/*",
+    "*://*.sci-hub.tv/*",
+    "*://sci-hub.tv/*",
+    "*://*.sci-hub.tw/*",
+    "*://sci-hub.tw/*",
+    "*://*.sci-hub.hk/*",
+    "*://sci-hub.hk/*",
+    "https://scholar.google.com/*",
+    "https://scholar.google.ru/*",
+    "https://scholar.google.ca/*",
+    "https://scholar.google.uk/*",
+    "https://scholar.google.lv/*",
+    "https://scholar.google.com.ph/*",
+    "https://scholar.google.com.ua/*"
+      ],
+      "js": [
+        "js/jquery/jquery.min.js",
+        "src/inject.js"
+      ],
+      "css": [
+	"css/panel.css"
+	]
+    }
+  ]
+}
